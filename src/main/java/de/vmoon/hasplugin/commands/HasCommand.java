@@ -1,6 +1,7 @@
 package de.vmoon.hasplugin.commands;
 
 import de.vmoon.hasplugin.HASPlugin;
+import de.vmoon.hasplugin.manager.scoreboardTimer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -36,6 +37,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
     private boolean timerRunning = false;
     private Player selectedPlayer = null;
     private TeleportManager teleportManager;
+    private scoreboardTimer scoreboardTimer;
     private Team noNameTagTeam;
 
     public HasCommand() {
@@ -82,7 +84,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                         sender.sendMessage("§cDu hast keine Berechtigung um diesen Befehl auszuführen!");
                         return true;
                     }
-                    sender.sendMessage("§c[HASPlugin] §rHASPlugin Version 2.6.3");
+                    sender.sendMessage("§c[HASPlugin] §rHASPlugin Version 2.6.4");
                     return true;
                 }
                 else if (args[0].equalsIgnoreCase("stop")) {
@@ -366,6 +368,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             enablepvp();
             noNameTagTeam.addEntry(player.getName());
             gamerunning = true;
+            scoreboardTimer.startTimer();
         }
         startTimer();
     }
