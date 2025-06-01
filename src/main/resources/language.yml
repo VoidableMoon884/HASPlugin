@@ -1,4 +1,4 @@
-#Language-file Version: 2.8.8
+#Language-file Version: 2.8.9
 languages:
   en:
     no_permission: "§cYou don't have the permission to use that command."
@@ -52,6 +52,7 @@ languages:
     game_normal_end: "§cAll players are dead! The game ends."
     end_seeker: "§cThe seeker §f("
     end_all_found: ")§c has found all players!"
+    hiders_win: "The hiders have won!"
 
     # End-Title
     title_all_found: "§2All Found!"
@@ -118,6 +119,7 @@ languages:
     game_normal_end: "§cAlle Spieler sind tot! Das Spiel endet."
     end_seeker: "§cDer Sucher §f("
     end_all_found: ")§c hat alle Spieler gefunden!"
+    hiders_win: "Die Verstecker haben gewonnen!"
 
     # End-Title
     title_all_found: "§2Alle Gefunden!"

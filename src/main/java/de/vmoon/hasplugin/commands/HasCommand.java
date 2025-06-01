@@ -1,6 +1,7 @@
 package de.vmoon.hasplugin.commands;
 
 import de.vmoon.hasplugin.HASPlugin;
+import de.vmoon.hasplugin.manager.EndGameTimer;
 import de.vmoon.hasplugin.manager.LanguageManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -122,7 +123,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
                     }
-                    sender.sendMessage("§c[HASPlugin] §rHASPlugin Version 2.8.8");
+                    sender.sendMessage("§c[HASPlugin] §rHASPlugin Version 2.8.9");
                     return true;
                 }
                 else if (args[0].equalsIgnoreCase("language")) {
@@ -513,6 +514,13 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     case 0:
                         enablepvp();
                         startGlobalTimer();
+                        EndGameTimer endGameTimer = new EndGameTimer(
+                                HASPlugin.getPlugin(),
+                                HASPlugin.getPlugin().getConfigManager(),
+                                languageManager,  // Deine existierende LanguageManager-Instanz
+                                HASPlugin.getPlugin().getHasCommandInstance()
+                        );
+                        endGameTimer.startTimer();
                         break;
                 }
 
@@ -620,6 +628,15 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             disablepvp();
             stopGlobalTimer();
             removeEffects();
+            EndGameTimer endGameTimer = new EndGameTimer(
+                    HASPlugin.getPlugin(),
+                    HASPlugin.getPlugin().getConfigManager(),
+                    languageManager,  // Deine existierende LanguageManager-Instanz
+                    HASPlugin.getPlugin().getHasCommandInstance()
+            );
+            if (endGameTimer.isRunning()) {
+                endGameTimer.cancelTimer();
+            }
             gamerunning = false;
         }
     }
@@ -643,6 +660,15 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
     private void endgame() {
         Bukkit.broadcastMessage(languageManager.getMessage("end_seeker") + selectedPlayer.getName() + languageManager.getMessage("end_all_found"));
         disablepvp();
+        EndGameTimer endGameTimer = new EndGameTimer(
+                HASPlugin.getPlugin(),
+                HASPlugin.getPlugin().getConfigManager(),
+                languageManager,  // Deine existierende LanguageManager-Instanz
+                HASPlugin.getPlugin().getHasCommandInstance()
+        );
+        if (endGameTimer.isRunning()) {
+            endGameTimer.cancelTimer();
+        }
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.sendTitle(languageManager.getMessage("title_all_found"), (languageManager.getMessage("title_seeker")) + selectedPlayer.getName(), 10, 70, 20);
             removeEffects();
@@ -673,6 +699,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
     }
 
     private void reload() {
+        HASPlugin.getPlugin().getConfigManager().reloadConfig();
         teleportManager.reloadConfig();
     }
     private boolean moreThanOnePlayerOnline() {
