@@ -420,7 +420,9 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             if (sender.hasPermission("has.debug")) {
                 completions.add("debugtime");
             }
-            completions.add("language");
+            if (sender.hasPermission("has.language")) {
+                completions.add("language");
+            }
             return completions.stream()
                     .filter(s -> s.startsWith(args[0]))
                     .collect(Collectors.toList());
@@ -431,6 +433,11 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             if (sender.hasPermission("has.select.random")) {
                 completions.add("random");
             }
+            return completions.stream()
+                    .filter(s -> s.startsWith(args[1]))
+                    .collect(Collectors.toList());
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("language")) {
+            List<String> completions = new ArrayList<>(languageManager.getAvailableLanguagesForTabComplete());
             return completions.stream()
                     .filter(s -> s.startsWith(args[1]))
                     .collect(Collectors.toList());
@@ -674,6 +681,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
 
     private void reload() {
         teleportManager.reloadConfig();
+        languageManager.reloadLanguage();
     }
     private boolean moreThanOnePlayerOnline() {
         return Bukkit.getOnlinePlayers().size() > 1;
