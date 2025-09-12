@@ -44,7 +44,6 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
     private BukkitTask globalTask = null;
     private BukkitTask countdownTask = null;
     private long countAlivePlayers = 0;
-    // Globale Map, um die Spieler zu tracken, die gevotet haben
     private final Set<Player> playersVoted = new HashSet<>();
     private LanguageManager languageManager;
     private final StatisticsManager statisticsManager;

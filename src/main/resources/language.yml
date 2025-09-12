@@ -65,6 +65,8 @@ languages:
     message_only: "§aOnly "
     message_left: " left!"
 
+    update_available: "§cA newer plugin version %version% is available! Download it here: %download%"
+
   de:
     # Generelle Nachrichten
     no_permission: "§cDu hast keine Berechtigungen um diesen Befehl auszuführen!"
@@ -130,3 +132,5 @@ languages:
     no_player_effect: "§cKein Spieler ausgewählt, um die Effekte zu verlängern."
     message_only: "§aNoch "
     message_left: " übrig!"
+
+    update_available: "§cEs ist eine neue Plugin-Version %version% verfügbar! Lade sie hier herunter: %link%"
