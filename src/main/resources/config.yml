@@ -1,0 +1,15 @@
+teleportLocation:
+  world: world
+  x: 0
+  y: 64
+  z: 0
+language: de
+
+statistics:
+  enabled: false
+  mysql:
+    host: localhost
+    port: 3306
+    database: hasplugin_db
+    username: your_user
+    password: your_password

@@ -1,7 +1,7 @@
 package de.vmoon.hasplugin.commands;
 
 import de.vmoon.hasplugin.HASPlugin;
-import de.vmoon.hasplugin.manager.LanguageManager;
+import de.vmoon.hasplugin.manager.*;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -47,10 +47,12 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
     // Globale Map, um die Spieler zu tracken, die gevotet haben
     private final Set<Player> playersVoted = new HashSet<>();
     private LanguageManager languageManager;
+    private final StatisticsManager statisticsManager;
 
-    public HasCommand(LanguageManager languageManager) {
+    public HasCommand(LanguageManager languageManager, StatisticsManager statisticsManager) {
         this.teleportManager = new TeleportManager();
         this.languageManager = languageManager;
+        this.statisticsManager = statisticsManager;
         Bukkit.getPluginManager().registerEvents(this, HASPlugin.getPlugin());
         setupNoNameTagTeam();
     }
@@ -62,8 +64,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             if (!sender.hasPermission("has.run")) {
                 sender.sendMessage(languageManager.getMessage("no_permission"));
                 return true;
-            }
-            else if (args.length > 0) {
+            } else if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("reload")) {
                     if (!sender.hasPermission("has.reload")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
@@ -71,16 +72,14 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     }
                     sender.sendMessage(languageManager.getMessage("config_reload"));
                     reload();
-                }
-                else if (args[0].equalsIgnoreCase("help")) {
+                } else if (args[0].equalsIgnoreCase("help")) {
                     if (!sender.hasPermission("has.help")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
                     }
                     sender.sendMessage("Bitte benutze /hashelp!");
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("beep")) {
+                } else if (args[0].equalsIgnoreCase("beep")) {
                     if (!sender.hasPermission("has.beep")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
@@ -94,8 +93,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     sender.sendMessage(languageManager.getMessage("sound_played"));
                     playbeep((Player) sender);
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("teleportall")) {
+                } else if (args[0].equalsIgnoreCase("teleportall")) {
                     if (!sender.hasPermission("has.teleportall")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
@@ -103,8 +101,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     teleportAllPlayers();
                     sender.sendMessage(languageManager.getMessage("all_teleport"));
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("endgame")) {
+                } else if (args[0].equalsIgnoreCase("endgame")) {
                     if (!sender.hasPermission("has.endgame")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
@@ -116,16 +113,14 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     endgame();
                     sender.sendMessage(languageManager.getMessage("game_end"));
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("version")) {
+                } else if (args[0].equalsIgnoreCase("version")) {
                     if (!sender.hasPermission("has.version")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
                     }
                     sender.sendMessage("§c[HASPlugin] §rHASPlugin Version 2.8.8");
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("language")) {
+                } else if (args[0].equalsIgnoreCase("language")) {
                     if (!sender.hasPermission("has.language")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
@@ -140,9 +135,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     languageManager.setLanguage(newLanguage);
                     sender.sendMessage(languageManager.getMessage("language_set").replace("%language%", newLanguage));
                     return true;
-                }
-
-                else if (args[0].equalsIgnoreCase("vote")) {
+                } else if (args[0].equalsIgnoreCase("vote")) {
                     if (!(sender instanceof Player)) {
                         sender.sendMessage(languageManager.getMessage("only_players"));
                         return true;
@@ -201,8 +194,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     }
 
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("add")) {
+                } else if (args[0].equalsIgnoreCase("add")) {
                     if (!sender.hasPermission("has.addtime")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
@@ -251,9 +243,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     }
 
                     return true;
-                }
-
-                else if (args[0].equalsIgnoreCase("stop")) {
+                } else if (args[0].equalsIgnoreCase("stop")) {
                     if (!sender.hasPermission("has.stop")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
@@ -261,13 +251,11 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     cancelgame();
                     if (timerRunning) {
                         stopTimer();
-                    }
-                    else {
+                    } else {
                         sender.sendMessage(languageManager.getMessage("no_timer"));
                     }
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("select")) {
+                } else if (args[0].equalsIgnoreCase("select")) {
                     if (!sender.hasPermission("has.select")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
@@ -284,24 +272,20 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                         if (args[1].equalsIgnoreCase("random")) {
                             selectedPlayer = selectRandomPlayer();
                             sender.sendMessage(languageManager.getMessage("new_random_player"));
-                        }
-                        else {
+                        } else {
                             Player newSelectedPlayer = Bukkit.getPlayer(args[1]);
                             if (newSelectedPlayer != null && newSelectedPlayer.isOnline()) {
                                 selectedPlayer = newSelectedPlayer;
                                 sender.sendMessage(selectedPlayer.getName() + languageManager.getMessage("x_selected"));
-                            }
-                            else {
+                            } else {
                                 sender.sendMessage(languageManager.getMessage("selected_player_not_online"));
                             }
                         }
-                    }
-                    else {
+                    } else {
                         sender.sendMessage(languageManager.getMessage("select_usage"));
                     }
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("skip")) {
+                } else if (args[0].equalsIgnoreCase("skip")) {
                     if (!sender.hasPermission("has.skip")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
@@ -314,12 +298,10 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                         if (time > 5) {
                             time = 5;
                             Bukkit.broadcastMessage(languageManager.getMessage("timer_5"));
-                        }
-                        else if (time <5) {
+                        } else if (time < 5) {
                             sender.sendMessage(languageManager.getMessage("timer_under_5"));
                         }
-                    }
-                    else {
+                    } else {
                         sender.sendMessage(languageManager.getMessage("no_timer"));
                     }
                     return true;
@@ -335,14 +317,12 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                     String globalTimerString = "Abgelaufene Zeit: " + globalTimer;
                     sender.sendMessage(globalTimerString);
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("autor")) {
+                } else if (args[0].equalsIgnoreCase("autor")) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         player.sendTitle("§4Dieses Plugin wurde programmiert von:", "§aVoidableMoon884", 10, 70, 20);
                     }
                     return true;
-                }
-                else {
+                } else {
                     if (!moreThanOnePlayerOnline()) {
                         sender.sendMessage(languageManager.getMessage("not_enough_players"));
                         return true;
@@ -354,13 +334,11 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                             selectedPlayer = selectRandomPlayer();
                         }
                         startgame();
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         sender.sendMessage(languageManager.getMessage("right_number"));
                     }
                 }
-            }
-            else {
+            } else {
                 if (!moreThanOnePlayerOnline()) {
                     sender.sendMessage(languageManager.getMessage("not_enough_players"));
                     return true;
@@ -426,8 +404,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             return completions.stream()
                     .filter(s -> s.startsWith(args[0]))
                     .collect(Collectors.toList());
-        }
-        else if (args.length == 2 && args[0].equalsIgnoreCase("select")) {
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("select")) {
             List<String> completions = new ArrayList<>();
             completions.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
             if (sender.hasPermission("has.select.random")) {
@@ -451,8 +428,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
         if (player != selectedPlayer) {
             player.setGameMode(GameMode.SPECTATOR);
             checkIfSelectedPlayerKilledEveryone();
-        }
-        else {
+        } else {
             player.setGameMode(GameMode.ADVENTURE);
             checkIfSelectedPlayerKilledEveryone();
             if (timerRunning) {
@@ -470,8 +446,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             if (timerRunning) {
                 // Wenn der Timer läuft, blockiere die Bewegung des Spielers
                 event.setCancelled(true);
-            }
-            else {
+            } else {
                 event.setCancelled(false);
             }
         }
@@ -611,6 +586,8 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
 
     private void startgame() {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            boolean isSeeker = player.equals(selectedPlayer);
+            statisticsManager.recordPlayedGame(player, isSeeker);
             player.setGameMode(GameMode.ADVENTURE);
             teleportManager.teleportAllPlayers();
             player.getInventory().clear();
@@ -620,8 +597,9 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
         }
         startTimer();
     }
+
     private void cancelgame() {
-        for (Player player: Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             player.setGameMode(GameMode.ADVENTURE);
             player.getInventory().clear();
             disablepvp();
@@ -630,6 +608,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             gamerunning = false;
         }
     }
+
     private void checkIfSelectedPlayerKilledEveryone() {
         if (selectedPlayer == null || !selectedPlayer.isOnline()) {
             // Der ausgewählte Spieler ist nicht gesetzt oder nicht online
@@ -643,6 +622,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                 .count();
 
         if (countAlivePlayers == 0) {
+            statisticsManager.recordSeekerWin(selectedPlayer);
             endgame();
         }
     }
@@ -683,15 +663,19 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
         teleportManager.reloadConfig();
         languageManager.reloadLanguage();
     }
+
     private boolean moreThanOnePlayerOnline() {
         return Bukkit.getOnlinePlayers().size() > 1;
     }
+
     private void disablepvp() {
         Bukkit.getWorld("world").setPVP(false);
     }
+
     private void enablepvp() {
         Bukkit.getWorld("world").setPVP(true);
     }
+
     public void playbeep(Player executor) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getLocation().distance(executor.getLocation()) <= 200) { // Anpassen des Radius nach Bedarf
@@ -725,6 +709,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             globalTimer = 0;
         }
     }
+
     public void resetGlobalTimer() {
         stopGlobalTimer();
         globalTimer = 0;
@@ -763,6 +748,7 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(timeMessage));
         }
     }
+
     public void removeEffects() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.removePotionEffect(PotionEffectType.SLOW);
