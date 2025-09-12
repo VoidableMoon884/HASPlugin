@@ -18,6 +18,4 @@ Tested on version 1.21.3
 - [GitHub](https://github.com/VoidableMoon884/HASPlugin/releases)
 - [Spigot](https://www.spigotmc.org/resources/hasplugin.122812/)
 
-Test
-
 ### License: cc-by-nc 4.0 (https://creativecommons.org/licenses/by-nc/4.0/deed.de)
