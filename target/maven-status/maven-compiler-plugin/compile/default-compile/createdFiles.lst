@@ -7,6 +7,7 @@ de\vmoon\hasplugin\Metrics$MetricsBase.class
 de\vmoon\hasplugin\Metrics$1.class
 de\vmoon\hasplugin\Metrics$AdvancedPie.class
 de\vmoon\hasplugin\Metrics$AdvancedBarChart.class
+de\vmoon\hasplugin\HASPlugin$1.class
 de\vmoon\hasplugin\Metrics$DrilldownPie.class
 de\vmoon\hasplugin\commands\TeleportManager.class
 de\vmoon\hasplugin\commands\HasCommand$3.class
@@ -14,6 +15,7 @@ de\vmoon\hasplugin\Metrics$JsonObjectBuilder.class
 de\vmoon\hasplugin\commands\HasCommand$2.class
 de\vmoon\hasplugin\commands\helpCommand.class
 de\vmoon\hasplugin\commands\pvpCommand.class
+de\vmoon\hasplugin\HASPlugin$1$1.class
 de\vmoon\hasplugin\manager\LanguageManager.class
 de\vmoon\hasplugin\Metrics$JsonObjectBuilder$JsonObject.class
 de\vmoon\hasplugin\Metrics$SimplePie.class
