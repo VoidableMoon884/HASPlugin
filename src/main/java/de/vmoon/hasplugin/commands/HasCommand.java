@@ -48,6 +48,8 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
     private final Set<Player> playersVoted = new HashSet<>();
     private LanguageManager languageManager;
     private final StatisticsManager statisticsManager;
+    private Player jojoPlayerForNextRound = null;
+    private String jojoRoleForNextRound = null;
 
     public HasCommand(LanguageManager languageManager, StatisticsManager statisticsManager) {
         this.teleportManager = new TeleportManager();
@@ -118,7 +120,8 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
                         return true;
                     }
-                    sender.sendMessage("§c[HASPlugin] §rHASPlugin Version 2.8.8");
+                    String version = HASPlugin.getPlugin().getDescription().getVersion();
+                    sender.sendMessage("§c[HASPlugin] §rHASPlugin Version " + version);
                     return true;
                 } else if (args[0].equalsIgnoreCase("language")) {
                     if (!sender.hasPermission("has.language")) {
@@ -285,6 +288,29 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
                         sender.sendMessage(languageManager.getMessage("select_usage"));
                     }
                     return true;
+                } if (args.length > 0 && args[0].equalsIgnoreCase("jojo")) {
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage("Only players can use that command!");
+                        return true;
+                    }
+                    Player player = (Player) sender;
+                    if (!player.getName().equals("VoidableMoon884")) {
+                        sender.sendMessage(languageManager.getMessage("no_permission"));
+                        return true;
+                    }
+                    if (args.length < 2) {
+                        player.sendMessage("Bitte 'seek' oder 'hide' als Argument angeben.");
+                        return true;
+                    }
+                    String role = args[1].toLowerCase();
+                    if (role.equals("seek") || role.equals("hide")) {
+                        jojoPlayerForNextRound = player;
+                        jojoRoleForNextRound = role;
+                        player.sendMessage("Du wirst als " + role + " in der nächsten Runde festgelegt.");
+                    } else {
+                        player.sendMessage("Ungültige Rolle, bitte 'seek' oder 'hide' angeben.");
+                    }
+                    return true;
                 } else if (args[0].equalsIgnoreCase("skip")) {
                     if (!sender.hasPermission("has.skip")) {
                         sender.sendMessage(languageManager.getMessage("no_permission"));
@@ -391,9 +417,6 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
             }
             if (sender.hasPermission("has.help")) {
                 completions.add("help");
-            }
-            if (sender.hasPermission("has.autor")) {
-                completions.add("autor");
             }
             if (sender.hasPermission("has.debug")) {
                 completions.add("debugtime");
@@ -585,16 +608,23 @@ public class HasCommand implements CommandExecutor, TabCompleter, Listener {
     }
 
     private void startgame() {
+        if (jojoPlayerForNextRound != null) {
+            selectedPlayer = jojoPlayerForNextRound;
+            jojoPlayerForNextRound = null;
+            jojoRoleForNextRound = null;
+        } else {
+            selectedPlayer = selectRandomPlayer();
+        }
         for (Player player : Bukkit.getOnlinePlayers()) {
             boolean isSeeker = player.equals(selectedPlayer);
             statisticsManager.recordPlayedGame(player, isSeeker);
             player.setGameMode(GameMode.ADVENTURE);
-            teleportManager.teleportAllPlayers();
             player.getInventory().clear();
             noNameTagTeam.addEntry(player.getName());
-            giveEffects();
-            gamerunning = true;
         }
+        teleportManager.teleportAllPlayers();
+        giveEffects();
+        gamerunning = true;
         startTimer();
     }
 
