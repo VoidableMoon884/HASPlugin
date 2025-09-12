@@ -17,6 +17,7 @@ de\vmoon\hasplugin\commands\pvpCommand.class
 de\vmoon\hasplugin\manager\LanguageManager.class
 de\vmoon\hasplugin\Metrics$JsonObjectBuilder$JsonObject.class
 de\vmoon\hasplugin\Metrics$SimplePie.class
+de\vmoon\hasplugin\manager\StatisticsManager.class
 de\vmoon\hasplugin\Metrics$SimpleBarChart.class
 de\vmoon\hasplugin\Metrics$MultiLineChart.class
 de\vmoon\hasplugin\HASPlugin.class
